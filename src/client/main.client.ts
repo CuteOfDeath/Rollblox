@@ -1,3 +1,4 @@
-import { makeHello } from "shared/module";
+import { Workspace } from "@rbxts/services";
 
-print(makeHello("main.client.ts"));
+let x = Workspace;
+x.Baseplate
