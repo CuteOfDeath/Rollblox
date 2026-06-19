@@ -1,4 +1,4 @@
-import { PhysicsState } from "./States"
+import { PhysicsState } from "../../shared/physics/States"
 
 export class PhysicsHandler {
     /**
@@ -8,6 +8,6 @@ export class PhysicsHandler {
      * @param State The current state of the part
      */
     SimulatePhysics(Object: Part, State: PhysicsState): void{
-        
+        //TODO: Implement this
     }
 }
