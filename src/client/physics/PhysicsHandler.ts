@@ -1,4 +1,4 @@
-import { CharacterState } from "./CharacterState"
+import { PhysicsState } from "./States"
 
 export class PhysicsHandler {
     /**
@@ -7,7 +7,7 @@ export class PhysicsHandler {
      * @param Object The part to be manipulated
      * @param State The current state of the part
      */
-    SimulatePhysics(Object: Part, State: CharacterState): void{
+    SimulatePhysics(Object: Part, State: PhysicsState): void{
         
     }
 }
