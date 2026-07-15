@@ -23,3 +23,8 @@ export type CharacterState = {
     acceleration: number;
     target: Vector3
 };
+
+export type CameraState = {
+    position: Vector3;
+    FOV: number
+}

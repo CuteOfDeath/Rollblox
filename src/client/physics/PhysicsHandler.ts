@@ -39,7 +39,7 @@ export class PhysicsHandler {
         let movX = 0
         let movY = 0
         let movZ = 0
-        if (State.input.buttons === InputFlags.Right){
+        if (State.input.buttons === InputFlags.Toward){
             movX = math.max(State.physics.hozVelocity + State.acceleration, State.topSpeed)
         }
 
