@@ -1,6 +1,5 @@
-import { PhysicsState } from "../../shared/physics/States"
-import { CharacterState } from "../../shared/physics/States"
-import { InputState } from "../../shared/physics/States"
+import { PhysicsState } from "shared/physics/States"
+import { CharacterState } from "shared/physics/States"
 import { InputFlags } from "shared/physics/Enums"
 
 export class PhysicsHandler {
@@ -8,10 +7,11 @@ export class PhysicsHandler {
      * Simulates physics and returns a manipulated PhysicsState
      * 
      * @param State The current state
+     * @param Force Velocity to be added to the object during simulation [HorizontalV, VerticalV]
      * 
      * @returns The state after manipulation
      */
-    SimulatePhysics(State: PhysicsState): PhysicsState{
+    SimulatePhysics(State: PhysicsState, Force?: [number, number]): PhysicsState{
         /**
          * First, it calculates the terminal velocity of the object. Then adds any force into velocity, adds the velocity to the position.
          * And finally proceeds to calculate gravity and air drag.
@@ -21,8 +21,15 @@ export class PhysicsHandler {
          * After all of the calculations it returns the new modified PhysicsState object.
          */
         let SimState = {} as PhysicsState
-
-
+        let termVelocity = math.sqrt(2 * State.weight / State.airDrag)
+        if (Force){
+            SimState.hozVelocity = State.hozVelocity + Force[0]
+            SimState.vertVelocity = State.vertVelocity + Force[1]
+        }
+        if (State.isGrounded){
+            
+        }
+        
         
         return SimState
     };
