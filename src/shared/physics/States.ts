@@ -1,7 +1,7 @@
 export type PhysicsState = {
     position: Vector3;
     hozVelocity: number;
-    vertVelocity:number
+    vertVelocity:number;
     plane: Vector3;
 
     weight: number;
@@ -21,10 +21,10 @@ export type CharacterState = {
     side: boolean;
     topSpeed: number;
     acceleration: number;
-    target: Vector3
+    target: Vector3;
 };
 
 export type CameraState = {
     position: Vector3;
-    FOV: number
+    FOV: number;
 }

@@ -20,17 +20,26 @@ export class PhysicsHandler {
          * Gravity subtracts the State.weight value from State.velocity.Y as long as State.isGrounded is True.
          * After all of the calculations it returns the new modified PhysicsState object.
          */
-        let SimState = {} as PhysicsState
-        let termVelocity = math.sqrt(2 * State.weight / State.airDrag)
+        let SimState = State
+        let termVelocity = -(math.sqrt(2 * State.weight / State.airDrag))
         if (Force){
             SimState.hozVelocity = State.hozVelocity + Force[0]
             SimState.vertVelocity = State.vertVelocity + Force[1]
+        }else{
+            SimState.hozVelocity = State.hozVelocity
+            SimState.vertVelocity = State.vertVelocity
         }
+
+        SimState.position.add(State.plane.mul(SimState.hozVelocity))
+        SimState.position = new Vector3(SimState.position.X, State.position.Y + SimState.vertVelocity, SimState.position.Z)
         if (State.isGrounded){
-            
+            //If grounded, apply friction instead of airdrag
+            SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.friction, 0) : math.max(SimState.hozVelocity - SimState.friction, 0)
+        }else{
+            //If in the air, apply gravity and airdrag
+            SimState.hozVelocity = SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.airDrag, 0) : math.max(SimState.hozVelocity - SimState.airDrag, 0)
+            SimState.vertVelocity = math.max(SimState.vertVelocity - SimState.weight, termVelocity)
         }
-        
-        
         return SimState
     };
 
