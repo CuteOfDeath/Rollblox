@@ -1,5 +1,5 @@
 export type PhysicsState = {
-    position: Vector3;
+    Part: Part;
     hozVelocity: number;
     vertVelocity:number;
     plane: Vector3;

@@ -30,8 +30,14 @@ export class PhysicsHandler {
             SimState.vertVelocity = State.vertVelocity
         }
 
-        SimState.position.add(State.plane.mul(SimState.hozVelocity))
-        SimState.position = new Vector3(SimState.position.X, State.position.Y + SimState.vertVelocity, SimState.position.Z)
+        SimState.Part.CFrame = new CFrame(SimState.Part.CFrame.Position.add(State.plane.mul(SimState.hozVelocity)))
+        SimState.Part.CFrame = new CFrame(SimState.Part.CFrame.Position.add(
+            new Vector3(
+            SimState.Part.CFrame.Position.X, 
+            SimState.Part.CFrame.Position.Y + SimState.hozVelocity, 
+            SimState.Part.CFrame.Position.Z)
+        ))
+        
         if (State.isGrounded){
             //If grounded, apply friction instead of airdrag
             SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.friction, 0) : math.max(SimState.hozVelocity - SimState.friction, 0)
@@ -40,6 +46,8 @@ export class PhysicsHandler {
             SimState.hozVelocity = SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.airDrag, 0) : math.max(SimState.hozVelocity - SimState.airDrag, 0)
             SimState.vertVelocity = math.max(SimState.vertVelocity - SimState.weight, termVelocity)
         }
+        
+
         return SimState
     };
 
