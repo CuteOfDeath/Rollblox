@@ -2,7 +2,7 @@ import { PhysicsState } from "shared/physics/States"
 import { CharacterState } from "shared/physics/States"
 import { InputFlags } from "shared/physics/Enums"
 import { Workspace } from "@rbxts/services"
-import { CollisionHandler, CollisionResult } from "client/collision/CollisionHandler"
+import { CollisionHandler } from "client/collision/CollisionHandler"
 
 const GROUND_THRESHOLD = 0.5 // -axis.Y above this counts as a floor, not a wall/ceiling
 
@@ -40,7 +40,7 @@ export class PhysicsHandler {
         
         if (State.isGrounded){
             //If grounded, apply friction instead of airdrag
-            SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.friction, 0) : math.max(SimState.hozVelocity - SimState.friction, 0)
+            SimState.hozVelocity = SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.friction, 0) : math.max(SimState.hozVelocity - SimState.friction, 0)
         }else{
             //If in the air, apply gravity and airdrag
             SimState.hozVelocity = SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.airDrag, 0) : math.max(SimState.hozVelocity - SimState.airDrag, 0)
@@ -48,12 +48,15 @@ export class PhysicsHandler {
         }
 
         SimState.isGrounded = false // recompute fresh each step, from this frame's collisions
-        let CollisionCheck = Workspace.GetPartBoundsInBox(SimState.Part.CFrame,SimState.Part.Size)
+        let overlapParams = new OverlapParams()
+        overlapParams.FilterType = Enum.RaycastFilterType.Exclude
+        overlapParams.FilterDescendantsInstances = [SimState.Part]
+        let CollisionCheck = Workspace.GetPartBoundsInBox(SimState.Part.CFrame,SimState.Part.Size, overlapParams)
         if (CollisionCheck.size() !== 0) {
             CollisionCheck.forEach(element => {
                 let preciseCheck = ColHandler.CheckCollision(SimState.Part,element)
                 if (preciseCheck.colliding) {
-                    ColHandler.CorrectPosition(SimState.Part,element,preciseCheck,1)
+                    ColHandler.CorrectPosition(SimState.Part,element,preciseCheck,0)
                     if (preciseCheck.axis && -preciseCheck.axis.Y > GROUND_THRESHOLD) {
                         SimState.isGrounded = true
                         SimState.vertVelocity = 0
