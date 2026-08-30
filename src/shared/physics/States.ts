@@ -16,7 +16,7 @@ export type InputState = {
 
 export type CharacterState = {
     physics: PhysicsState;
-    input: InputState;
+    input: Array<InputState>;
 
     side: boolean;
     topSpeed: number;
