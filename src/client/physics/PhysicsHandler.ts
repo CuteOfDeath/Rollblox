@@ -67,7 +67,7 @@ export class PhysicsHandler {
     };
 
     /**
-     * Simulates physics on the character, handling movement from inputs, and returns a manipulated CharacterState
+     * Simulates physics on the character, handling movement from inputs, and returns a manipulated CharacterState TBA
      * 
      * @param State The current character state.
      * 
