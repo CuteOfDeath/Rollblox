@@ -1,6 +1,10 @@
 import { PhysicsState } from "shared/physics/States"
 import { CharacterState } from "shared/physics/States"
 import { InputFlags } from "shared/physics/Enums"
+import { Workspace } from "@rbxts/services"
+import { CollisionHandler, CollisionResult } from "client/collision/CollisionHandler"
+
+const GROUND_THRESHOLD = 0.5 // -axis.Y above this counts as a floor, not a wall/ceiling
 
 export class PhysicsHandler {
     /**
@@ -21,6 +25,7 @@ export class PhysicsHandler {
          * After all of the calculations it returns the new modified PhysicsState object.
          */
         let SimState = State
+        let ColHandler = new CollisionHandler
         let termVelocity = -(math.sqrt(2 * State.weight / State.airDrag))
         if (Force){
             SimState.hozVelocity = State.hozVelocity + Force[0]
@@ -31,12 +36,7 @@ export class PhysicsHandler {
         }
 
         SimState.Part.CFrame = new CFrame(SimState.Part.CFrame.Position.add(State.plane.mul(SimState.hozVelocity)))
-        SimState.Part.CFrame = new CFrame(SimState.Part.CFrame.Position.add(
-            new Vector3(
-            SimState.Part.CFrame.Position.X, 
-            SimState.Part.CFrame.Position.Y + SimState.hozVelocity, 
-            SimState.Part.CFrame.Position.Z)
-        ))
+        SimState.Part.CFrame = new CFrame(SimState.Part.CFrame.Position.add(new Vector3(0, SimState.vertVelocity, 0)))
         
         if (State.isGrounded){
             //If grounded, apply friction instead of airdrag
@@ -45,6 +45,21 @@ export class PhysicsHandler {
             //If in the air, apply gravity and airdrag
             SimState.hozVelocity = SimState.hozVelocity < 0? math.min(SimState.hozVelocity + SimState.airDrag, 0) : math.max(SimState.hozVelocity - SimState.airDrag, 0)
             SimState.vertVelocity = math.max(SimState.vertVelocity - SimState.weight, termVelocity)
+        }
+
+        SimState.isGrounded = false // recompute fresh each step, from this frame's collisions
+        let CollisionCheck = Workspace.GetPartBoundsInBox(SimState.Part.CFrame,SimState.Part.Size)
+        if (CollisionCheck.size() !== 0) {
+            CollisionCheck.forEach(element => {
+                let preciseCheck = ColHandler.CheckCollision(SimState.Part,element)
+                if (preciseCheck.colliding) {
+                    ColHandler.CorrectPosition(SimState.Part,element,preciseCheck,1)
+                    if (preciseCheck.axis && -preciseCheck.axis.Y > GROUND_THRESHOLD) {
+                        SimState.isGrounded = true
+                        SimState.vertVelocity = 0
+                    }
+                }
+            });
         }
         
 
@@ -63,7 +78,7 @@ export class PhysicsHandler {
         let movX = 0
         let movY = 0
         let movZ = 0
-        if (State.input.buttons === InputFlags.Toward){
+        if (State.input.buttons === InputFlags.Forward){
             movX = math.max(State.physics.hozVelocity + State.acceleration, State.topSpeed)
         }
 
